@@ -33,6 +33,13 @@ def check_safety(x_image):
     safety_checker_input = safety_feature_extractor(numpy_to_pil(x_image), return_tensors="pt")
     x_checked_image, has_nsfw_concept = safety_checker(images=x_image, clip_input=safety_checker_input.pixel_values)
 
+    # Load and replace NSFW content with the warning image
+    warning_image = Image.open("warning.png")
+    warning_image = warning_image.resize((x_checked_image.shape[1], x_checked_image.shape[0]))
+    warning_image_np = np.array(warning_image)
+
+    x_checked_image[has_nsfw_concept] = warning_image_np
+
     return x_checked_image, has_nsfw_concept
 
 
